@@ -15,27 +15,27 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Download build
         uses: actions/download-artifact@v4
         with:
           name: build
           path: build
-      - name: Delete latest-snapshot tag if exists
+      - name: Clean up existing latest-snapshot tag
         run: |
-          if git ls-remote --tags origin | grep -q "refs/tags/latest-snapshot"; then
-            git push --delete origin latest-snapshot
-          else
-            echo "Tag latest-snapshot does not exist. Skipping delete."
-          fi
+          # Try to delete the tag if it exists, but don't fail if it doesn't
+          git push --delete origin latest-snapshot 2>/dev/null || echo "Tag latest-snapshot does not exist or could not be deleted"
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        continue-on-error: true
       - name: Release
         uses: docker://antonyurchenko/git-release:v6
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           RELEASE_NAME: ${{ needs.build.outputs.version }}
           PRE_RELEASE: ${{ github.ref_type == 'branch' }}
-          UNRELEASED: ${{ github.ref_type == 'branch' && 'update' || '' }}
+          UNRELEASED: ${{ github.ref_type == 'branch' && 'create' || '' }}
           UNRELEASED_TAG: latest-snapshot
           ALLOW_EMPTY_CHANGELOG: ${{ github.ref_type == 'branch' && 'true' || 'false' }}
         with:
