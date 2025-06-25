@@ -22,7 +22,7 @@ jobs:
       - name: Release
         uses: docker://antonyurchenko/git-release:v6
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           RELEASE_NAME: ${{ needs.build.outputs.version }}
           PRE_RELEASE: ${{ github.ref_type == 'branch' }}
           UNRELEASED: ${{ github.ref_type == 'branch' && 'update' || '' }}
