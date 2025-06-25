@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     uses: ./.github/workflows/build-workflow.yml
+
   release:
     needs: build
     name: Create Release
@@ -19,6 +20,15 @@ jobs:
         with:
           name: build
           path: build
+      - name: Delete latest-snapshot tag if exists
+        run: |
+          if git ls-remote --tags origin | grep -q "refs/tags/latest-snapshot"; then
+            git push --delete origin latest-snapshot
+          else
+            echo "Tag latest-snapshot does not exist. Skipping delete."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       - name: Release
         uses: docker://antonyurchenko/git-release:v6
         env:
