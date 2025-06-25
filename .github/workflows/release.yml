@@ -1,0 +1,90 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionIncrementer:
+        type: choice
+        description: 'Version increment type (see axion-release-plugin docs)'
+        required: true
+        default: 'default'
+        options:
+          - default
+          - incrementPatch
+          - incrementMinor
+          - incrementMajor
+          - incrementPrerelease
+      createTag:
+        type: boolean
+        description: 'Create a git tag for this release'
+        required: true
+        default: true
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Run axion-release
+        run: |
+          if [ "${{ inputs.versionIncrementer }}" = "default" ]; then
+            ./gradlew release
+          else
+            ./gradlew release -Prelease.versionIncrementer=${{ inputs.versionIncrementer }}
+          fi
+
+      - name: Get new version
+        id: version
+        run: echo "version=$(./gradlew --console plain --quiet currentVersion -Prelease.quiet)" >> $GITHUB_OUTPUT
+
+      - name: Build project
+        run: ./gradlew build shadowJar
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          files: build/libs/*.jar
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push changes
+        if: inputs.createTag
+        run: |
+          git push origin HEAD:${{ github.ref }}
+          git push --tags 
