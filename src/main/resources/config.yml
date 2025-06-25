@@ -1,0 +1,30 @@
+# List of worlds in which Hydrophobia is active
+worlds:
+  - world
+
+# Whether players without the bypass permission should be damaged by water
+water-damage-players: true
+
+# Whether entities should be damaged by water
+water-damage-entities: false
+
+# Whether boats should take damage and break, even if entity damage is false
+water-damage-boats: true
+
+# Whether rain should be treated as water, thus causing damage
+rain-as-water-damage: true
+
+# The amount of damage a player takes per tick. Defaults to one heart (half of lava damage)
+water-damage-per-tick: 2
+
+# If true, having the Water Breathing effect will allow players to avoid damage
+safe-with-potion: true
+
+# The sound to play to the player when they take water damage
+damage-sound: ENTITY_PLAYER_HURT_DROWN
+
+messages:
+  # Sends an alert in any configured worlds that rain has begun
+  rain-started: "&e&lWarning! &r&eRain has started; seek shelter!"
+  # Sends a single message to a player the moment they touch water. This message will only be sent once per minute to avoid spam
+  touched-water: "&e&lWarning! &r&eWater isn't safe here. Use a water breathing potion or avoid water at all costs."

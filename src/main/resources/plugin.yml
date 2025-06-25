@@ -1,0 +1,21 @@
+name: Hydrophobia
+version: '${version}'
+main: dev.groovin.hydrophobia.Hydrophobia
+api-version: '${apiVersion}'
+authors: [Groovin]
+description: A configurable plugin for damaging entities in water.
+website: https://github.com/groovin/hydrophobia
+
+commands:
+  hydrophobia:
+    description: Main command for Hydrophobia plugin
+    usage: /hydrophobia
+    permission: hydrophobia.admin
+
+permissions:
+  hydrophobia.admin:
+    description: Allows access to all Hydrophobia commands
+    default: op
+  hydrophobia.bypass:
+    description: Allows bypassing water damage
+    default: op
