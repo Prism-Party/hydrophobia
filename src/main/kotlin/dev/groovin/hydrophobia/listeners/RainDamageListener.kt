@@ -5,7 +5,6 @@ import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import org.bukkit.Registry
 import org.bukkit.Sound
-import org.bukkit.World
 import org.bukkit.block.Biome
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -77,7 +76,8 @@ class RainDamageListener : Listener {
 
         // Check if player has water breathing effect and it's enabled in config
         if (Hydrophobia.instance.config.getBoolean("safe-with-potion") &&
-            player.hasPotionEffect(PotionEffectType.WATER_BREATHING)) {
+            player.hasPotionEffect(PotionEffectType.WATER_BREATHING)
+        ) {
             return
         }
 
@@ -119,21 +119,18 @@ class RainDamageListener : Listener {
         val biomeAllowsRain = when (biome) {
             // Desert biomes - no rain
             Biome.DESERT,
-            
             // Nether biomes - no rain
             Biome.NETHER_WASTES,
             Biome.SOUL_SAND_VALLEY,
             Biome.CRIMSON_FOREST,
             Biome.WARPED_FOREST,
             Biome.BASALT_DELTAS,
-            
             // End biomes - no rain
             Biome.THE_END,
             Biome.END_HIGHLANDS,
             Biome.END_MIDLANDS,
             Biome.END_BARRENS,
             Biome.SMALL_END_ISLANDS,
-            
             // Cold biomes that have snow instead of rain
             Biome.SNOWY_BEACH,
             Biome.SNOWY_TAIGA,
@@ -141,9 +138,9 @@ class RainDamageListener : Listener {
             Biome.FROZEN_RIVER,
             Biome.FROZEN_OCEAN,
             Biome.DEEP_FROZEN_OCEAN,
-            
+            -> false
             // All other biomes support rain
-            else -> true,
+            else -> true
         }
 
         // If biome doesn't allow rain, return false

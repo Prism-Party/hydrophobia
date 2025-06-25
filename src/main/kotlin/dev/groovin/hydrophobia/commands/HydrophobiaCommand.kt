@@ -50,8 +50,8 @@ class HydrophobiaCommand : CommandExecutor, TabCompleter {
         }
 
         return when (args.size) {
-            1 -> listOf("reload", "help"),
-            else -> emptyList(),
+            1 -> listOf("reload", "help")
+            else -> emptyList()
         }
     }
-} 
+}

@@ -7,7 +7,6 @@ import org.bukkit.Registry
 import org.bukkit.Sound
 import org.bukkit.entity.Boat
 import org.bukkit.entity.Damageable
-import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -43,7 +42,8 @@ class WaterDamageListener : Listener {
         if (player.location.block.type == Material.WATER) {
             // Check if player has water breathing effect and it's enabled in config
             if (Hydrophobia.instance.config.getBoolean("safe-with-potion") &&
-                player.hasPotionEffect(PotionEffectType.WATER_BREATHING)) {
+                player.hasPotionEffect(PotionEffectType.WATER_BREATHING)
+            ) {
                 return
             }
 
@@ -51,7 +51,7 @@ class WaterDamageListener : Listener {
             if (Hydrophobia.instance.config.getBoolean("water-damage-players")) {
                 val currentTime = System.currentTimeMillis()
                 val lastDamage = lastDamageTime.getOrDefault(player, 0L)
-                
+
                 if (currentTime - lastDamage >= damageCooldown) {
                     val damage = Hydrophobia.instance.config.getDouble("water-damage-per-tick")
                     player.damage(damage)
@@ -135,9 +135,11 @@ class WaterDamageListener : Listener {
             // Drop boat item
             boat.world.dropItemNaturally(
                 boat.location,
-                org.bukkit.inventory.ItemStack(boat.type.name.let {
-                    Material.valueOf(it)
-                }),
+                org.bukkit.inventory.ItemStack(
+                    boat.type.name.let {
+                        Material.valueOf(it)
+                    },
+                ),
             )
 
             boat.remove()
